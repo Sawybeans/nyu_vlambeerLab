@@ -11,29 +11,104 @@ using UnityEngine;
 
 public class Pathmaker : MonoBehaviour {
 
-// STEP 2: ============================================================================================
-// translate the pseudocode below
+	// STEP 2: ============================================================================================
+	// translate the pseudocode below
 
-//	DECLARE CLASS MEMBER VARIABLES:
-//	Declare a private integer called counter that starts at 0; 		// counter will track how many floor tiles I've instantiated
-//	Declare a public Transform called floorPrefab, assign the prefab in inspector;
-//	Declare a public Transform called pathmakerSpherePrefab, assign the prefab in inspector; 		// you'll have to make a "pathmakerSphere" prefab later
+	//	DECLARE CLASS MEMBER VARIABLES:
+	//	Declare a private integer called counter that starts at 0; 		// counter will track how many floor tiles I've instantiated
+	//	Declare a public Transform called floorPrefab, assign the prefab in inspector;
+	//	Declare a public Transform called pathmakerSpherePrefab, assign the prefab in inspector; 		// you'll have to make a "pathmakerSphere" prefab later
+
+	private int counter = 0;
+	public Transform floorPrefab;
+	public Transform pathmakerSpherePrefab;
+
+	public GameObject originalTile;
+	public GameObject originalSphere;
+
+	public bool canSpawn = true;
+
+	public static int globalTileCount = 200;
 
 
 	void Update () {
-//		If counter is less than 50, then:
-//			Generate a random number from 0.0f to 1.0f;
-//			If random number is less than 0.25f, then rotate myself 90 degrees;
-//				... Else if number is 0.25f-0.5f, then rotate myself -90 degrees;
-//				... Else if number is 0.99f-1.0f, then instantiate a pathmakerSpherePrefab clone at my current position;
-//			// end elseIf
+		//		If counter is less than 50, then:
+		//			Generate a random number from 0.0f to 1.0f;
+		//			If random number is less than 0.25f, then rotate myself 90 degrees;
+		//				... Else if number is 0.25f-0.5f, then rotate myself -90 degrees;
+		//				... Else if number is 0.99f-1.0f, then instantiate a pathmakerSpherePrefab clone at my current position;
+		//			// end elseIf
 
-//			Instantiate a floorPrefab clone at current position;
-//			Move forward ("forward", as in, the direction I'm currently facing) by 5 units;
-//			Increment counter;
-//		Else:
-//			Destroy my game object; 		// self destruct if I've made enough tiles already
+		//			Instantiate a floorPrefab clone at current position;
+		//			Move forward ("forward", as in, the direction I'm currently facing) by 5 units;
+		//			Increment counter;
+		//		Else:
+		//			Destroy my game object; 		// self destruct if I've made enough tiles already
+
+		if (counter < 60)
+		{
+			//Make a new variable to select a random number
+			float randomNumber = Random.Range(0.0f, 1.0f);
+
+			if (randomNumber < 0.25f)
+            {
+				//Rotate 90 deg to the right
+				pathmakerSpherePrefab.transform.Rotate(0f, 90.0f, 0f);
+            }
+
+			else if (randomNumber >= 0.25f && randomNumber < 0.5f)
+            {
+				//Rotate 90 deg to the left
+				pathmakerSpherePrefab.transform.Rotate(0f, -90.0f, 0f);
+			}
+
+			else if (randomNumber >= 0.99f)
+            {
+				//Set position for new sphere to spawn
+				Vector3 sphereSpawnPosition = new Vector3(pathmakerSpherePrefab.position.x, pathmakerSpherePrefab.position.y, pathmakerSpherePrefab.position.z);
+
+				//Create a new sphere at spawn position
+				GameObject newSphere = Instantiate(originalSphere, sphereSpawnPosition, Quaternion.Euler(0,0,0));
+            }
+
+			//Set position for new tile to spawn as the position of the new sphere
+			Vector3 tileSpawnPosition = new Vector3(pathmakerSpherePrefab.position.x, pathmakerSpherePrefab.position.y, pathmakerSpherePrefab.position.z);
+
+			//Move the sphere forwards by 5 units
+			originalSphere.transform.Translate(Vector3.forward * 5);
+
+			if (canSpawn == true)
+            {
+				//Create a new tile at spawn position
+				GameObject newTile = Instantiate(originalTile, tileSpawnPosition, Quaternion.Euler(0, 0, 0));
+
+				//Increase the counter
+				counter++;
+			}
+			
+        }
+
+		else
+        {
+			Destroy(originalSphere);
+			Destroy(pathmakerSpherePrefab);
+        }
 	}
+
+    private void OnTriggerStay(Collider other)
+    {
+		//If the sphere is not intersecting with a tile, then it can spawn a new tile
+        if (other == null)
+        {
+			canSpawn = true;
+        }
+
+		//Otherwise, it cannot
+		else
+        {
+			canSpawn = false;
+        }
+    }
 
 } 
 
