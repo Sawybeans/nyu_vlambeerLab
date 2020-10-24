@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // MAZE PROC GEN LAB
 // all students: complete steps 1-6, as listed in this file
@@ -26,12 +27,39 @@ public class Pathmaker : MonoBehaviour {
 	public GameObject originalTile;
 	public GameObject originalSphere;
 
+	public GameObject woodTile;
+	public GameObject carpTile;
+	public GameObject kitchTile;
+
+	public Material woodMat;
+	public Material carpMat;
+	public Material kitchMat;
+
 	public bool canSpawn = true;
 
 	public static int globalTileCount = 200;
+	public static int currentTileCount;
+
+	public void OnTriggerStay(Collider other)
+	{
+		
+		//If the sphere is not intersecting with a tile, then it can spawn a new tile
+        if (other == null)
+        {
+			canSpawn = true;
+        }
+
+		//Otherwise, it cannot
+		else
+        {
+			canSpawn = false;
+        }
+		
+	}
 
 
-	void Update () {
+    void Update () {
+
 		//		If counter is less than 50, then:
 		//			Generate a random number from 0.0f to 1.0f;
 		//			If random number is less than 0.25f, then rotate myself 90 degrees;
@@ -44,6 +72,8 @@ public class Pathmaker : MonoBehaviour {
 		//			Increment counter;
 		//		Else:
 		//			Destroy my game object; 		// self destruct if I've made enough tiles already
+
+
 
 		if (counter < 60)
 		{
@@ -84,6 +114,7 @@ public class Pathmaker : MonoBehaviour {
 
 				//Increase the counter
 				counter++;
+				currentTileCount++;
 			}
 			
         }
@@ -92,23 +123,12 @@ public class Pathmaker : MonoBehaviour {
         {
 			Destroy(originalSphere);
 			Destroy(pathmakerSpherePrefab);
-        }
+		}
+
+		
 	}
 
-    private void OnTriggerStay(Collider other)
-    {
-		//If the sphere is not intersecting with a tile, then it can spawn a new tile
-        if (other == null)
-        {
-			canSpawn = true;
-        }
-
-		//Otherwise, it cannot
-		else
-        {
-			canSpawn = false;
-        }
-    }
+    
 
 } 
 
